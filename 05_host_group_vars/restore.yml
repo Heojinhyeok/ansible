@@ -1,0 +1,12 @@
+---
+- name: Restore packages
+  hosts: all
+  tasks:
+    - name: Remove the package 
+      yum:
+        name:
+          - httpd
+          - mariadb-server
+          - mutt
+          - tree
+        state: absent

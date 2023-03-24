@@ -1,0 +1,14 @@
+---
+- name: Restroe configure_time.yml
+  hosts: all
+  gather_facts: no
+  pre_tasks:
+    - name: configure timezone - Asia/Seoul
+      timezone:
+        name: Asia/Seoul
+  
+  roles:
+    - rhel-system-roles.timesync
+  
+    # timezone => Asia/Seoul
+    # timesync role => time.bora.net

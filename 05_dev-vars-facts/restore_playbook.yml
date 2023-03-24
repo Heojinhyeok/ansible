@@ -1,0 +1,22 @@
+---
+- name: Restroe playbook.yml
+  hosts: all
+  tasks: 
+    # 1) /etc/ansible/facts.d 디렉토리 삭제 (file)
+    # 2) 웹 서비스 종료 -httpd (service)
+    # 3) 웹 패키지 삭제 - httpd (yum)
+    - name: /etc/ansible/facts.d 디렉토리 삭제
+      file: 
+        path: /etc/ansible/facts.d
+        state: absent
+
+    - name: 웹 서비스 종료 -httpd (service)
+      service:
+        name: "{{ ansible_local.custom.general.service }}"
+        state: stopped
+        enabled: no
+
+    - name: 웹 패키지 삭제 - httpd (yum)
+      yum:
+        name: "{{ ansible_local.custom.general.package }}"
+        state: absent

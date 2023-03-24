@@ -1,0 +1,20 @@
+---
+- name: DB 복원하기
+  hosts: all
+  vars:
+    mariadb_packages:
+      - mariadb-server
+      - python3-PyMySQL
+    mariadb_service: mariadb
+  tasks:
+    - name: DB 서비스 중지
+      service:
+        name: "{{ mariadb_service }}"
+        state: stopped
+        enabled: no
+
+    - name: DB 패키지 삭제 - mariadb-server, python3-PyMySQL
+      yum:
+        name: "{{ item }}"
+        state: absent
+      with_items: "{{ mariadb_packages }}"

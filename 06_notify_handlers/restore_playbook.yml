@@ -1,0 +1,19 @@
+---
+- name: DB 설정
+  hosts: databases
+  vars:
+    db_packages:
+      - mariadb-server
+      - python3-PyMySQL
+    db_svc: mariadb
+  tasks:
+    - name: 2) DB 서비스 중지 - mariadb
+      service:
+        name: "{{ db_svc }}"
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+    - name: 1) DB 패키지 삭제 - mariadb-server, python3-PyMySQL
+      yum: 
+        name: "{{ db_packages }}"
+        state: absent

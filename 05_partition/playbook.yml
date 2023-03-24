@@ -1,0 +1,58 @@
+---
+- name: 파티션 설정
+  hosts: web4.example.com
+  vars:
+    pkg_sdb: /dev/sdb
+    pkg_sdc: /dev/sdc
+  tasks:
+    - name: 파티션 작업
+      parted:
+        device: "{{ item }}"
+        number: 1
+        state: present
+        part_end: 1GB
+      with_items:
+        - "{{ pkg_sdb }}"
+        - "{{ pkg_sdc }}"
+      
+    - name: 1) LVM 작업 - PV 구성
+      lvg:
+        vg: vg1
+        pvs: /dev/sdb1,/dev/sdc1
+
+    - name: 2) LVM 작업 -  VG 구성 (lv1)
+      lvol:
+        vg: vg1
+        lv: lv1
+        size: 500
+        pvs: /dev/sdb1
+
+    - name: 2-1) LVM 작업 -  VG 구성 (lv2)
+      lvol:
+        vg: vg1
+        lv: lv2
+        size: 1000
+        pvs: /dev/sdc1
+    
+    - name: FS 작업 - ext4
+      filesystem:
+        fstype: ext4
+        dev: /dev/vg1/lv1
+    - name: FS 작업 - xfs
+      filesystem:
+        fstype: xfs
+        dev: /dev/vg1/lv2
+
+    - name: 마운트 작업 - lv1
+      mount:
+        path: /mnt/lv1
+        src: /dev/vg1/lv1
+        fstype: ext4
+        state: present
+
+    - name: 마운트 작업 - lv2
+      mount:
+        path: /mnt/lv2
+        src: /dev/vg1/lv2
+        fstype: xfs
+        state: present

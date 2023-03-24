@@ -1,0 +1,22 @@
+---
+- name: 복원
+  gather_facts: no
+  hosts: databases
+  vars:
+    web_package: httpd     
+    db_package: mariadb-server
+    db_service: mariadb
+  tasks:
+    - name: STOP {{ de_service }} db_service
+      service:
+        name: "{{ db_service }}"
+        state: stopped
+        enabled: no
+    - name: remove {{ web_package }} package
+      yum:
+        name: "{{ web_package }}"
+        state: absent
+    - name: remove {{ db_package }} package
+      yum:
+        name: "{{ db_package }}"
+        state: absent
