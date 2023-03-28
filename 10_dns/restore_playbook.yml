@@ -1,0 +1,33 @@
+---
+- name: Restore_playbook.yml
+  hosts: all
+  tasks:
+    - name: 방화벽 서비스 내리기
+      firewalld:
+        service: dns
+        permanent: no
+        immediate: no
+        state: disabled
+
+    - name: 서비스 내리기
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      with_items:
+        - firewalld
+        - named
+
+    - name: 패키지 삭제
+      yum:
+        name: 
+          - firewalld
+          - bind
+          - bind-utils
+        state: absent
+
+    - name: /var/named 디렉토리 삭제
+      file:
+        name: /var/named
+        state: absent
+      
